@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="linux,mysql," />
 
 
 
@@ -79,13 +79,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Ddzbl">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="首先更新软件源   12apt-get updateapt-get upgrade 然后输入如下指令，安装mysql1apt-get install mysql-server mysql-client 在安装的过程中按照提示输入root用户的密码。查看mysql版本12mysql --versionmysql  Ver 14.14 Distrib 5.5.59, for debian-linux-">
+<meta name="keywords" content="linux,mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在debian8上安装mysql数据库">
+<meta property="og:url" content="http://yoursite.com/2018/04/11/在debian8上安装mysql数据库并创建远程连接用户、/index.html">
 <meta property="og:site_name" content="Ddzbl">
+<meta property="og:description" content="首先更新软件源   12apt-get updateapt-get upgrade 然后输入如下指令，安装mysql1apt-get install mysql-server mysql-client 在安装的过程中按照提示输入root用户的密码。查看mysql版本12mysql --versionmysql  Ver 14.14 Distrib 5.5.59, for debian-linux-">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-11T14:06:00.841Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ddzbl">
+<meta name="twitter:title" content="在debian8上安装mysql数据库">
+<meta name="twitter:description" content="首先更新软件源   12apt-get updateapt-get upgrade 然后输入如下指令，安装mysql1apt-get install mysql-server mysql-client 在安装的过程中按照提示输入root用户的密码。查看mysql版本12mysql --versionmysql  Ver 14.14 Distrib 5.5.59, for debian-linux-">
 
 
 
@@ -115,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/04/11/在debian8上安装mysql数据库并创建远程连接用户、/"/>
 
 
 
 
 
-  <title>Ddzbl</title>
+  <title>在debian8上安装mysql数据库 | Ddzbl</title>
   
 
 
@@ -140,8 +145,7 @@
     
   
 
-  <div class="container sidebar-position-right 
-  page-home">
+  <div class="container sidebar-position-right page-post-detail">
     <div class="headband"></div>
     <a href="https://github.com/nofound"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub"></a>
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -226,9 +230,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -258,9 +262,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/11/在debian8上安装mysql数据库并创建远程连接用户、/" itemprop="url">在debian8上安装mysql数据库</a></h1>
+          <h1 class="post-title" itemprop="name headline">在debian8上安装mysql数据库</h1>
         
 
         <div class="post-meta">
@@ -310,9 +312,7 @@
       
 
       
-        
-          
-            <p>首先更新软件源  </p>
+        <p>首先更新软件源  </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get upgrade</span><br></pre></td></tr></table></figure>
 <p>然后输入如下指令，安装mysql<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install mysql-server mysql-client</span><br></pre></td></tr></table></figure></p>
 <p>在安装的过程中按照提示输入root用户的密码。<br>查看mysql版本<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql --version</span><br><span class="line">mysql  Ver 14.14 Distrib 5.5.59, for debian-linux-gnu (x86_64) using readline 6.3</span><br></pre></td></tr></table></figure></p>
@@ -322,8 +322,6 @@
 <p>其中的第一个’*’指的是数据库，第二个指的是数据库中的表，通配符%允许所有的地址进行连接，也可以指定ip地址。<br>现在可以退出mysql数据库并且重启mysql服务，或者使用命令来刷新权限<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; flush privileges;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br></pre></td></tr></table></figure></p>
 <p>当然还没有结束，还要去修改位于/etc/mysql目录的my.cnf文件。<br>找到bind-address将其改为0.0.0.0<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#</span><br><span class="line"># Instead of skip-networking the default is now to listen only on</span><br><span class="line"># localhost which is more compatible and is not less secure.</span><br><span class="line">bind-address            = 127.0.0.1</span><br><span class="line">#</span><br></pre></td></tr></table></figure></p>
 
-          
-        
       
     </div>
     
@@ -338,134 +336,38 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/11/hello-world-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="biu">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/biu.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Ddzbl">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/04/11/hello-world-1/" itemprop="url">hello,world</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-11T18:50:04+08:00">
-                2018-04-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-
+            <a href="/tags/linux/" rel="tag"># linux</a>
           
-            
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
           
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>测试。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/11/hello-world-1/" rel="next" title="hello,world">
+                <i class="fa fa-chevron-left"></i> hello,world
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
       
     </footer>
   </div>
@@ -475,10 +377,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -486,6 +389,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -690,6 +597,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
