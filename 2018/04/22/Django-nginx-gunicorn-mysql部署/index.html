@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="linux,Django,nginx," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="安装nginx安装nginx PGP签名文件12wget http://nginx.org/keys/nginx_signing.keysudo apt-key add nginx_signing.key 修改source源编辑/etc/apt/source.list文件,在文件末追加以下：12deb http://nginx.org/packages/mainline/debian/ jessi">
+<meta name="keywords" content="linux,Django,nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django+nginx+gunicorn+mysql部署">
+<meta property="og:url" content="http://yoursite.com/2018/04/22/Django-nginx-gunicorn-mysql部署/index.html">
+<meta property="og:site_name" content="Ddzbl">
+<meta property="og:description" content="安装nginx安装nginx PGP签名文件12wget http://nginx.org/keys/nginx_signing.keysudo apt-key add nginx_signing.key 修改source源编辑/etc/apt/source.list文件,在文件末追加以下：12deb http://nginx.org/packages/mainline/debian/ jessi">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-22T14:45:29.630Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django+nginx+gunicorn+mysql部署">
+<meta name="twitter:description" content="安装nginx安装nginx PGP签名文件12wget http://nginx.org/keys/nginx_signing.keysudo apt-key add nginx_signing.key 修改source源编辑/etc/apt/source.list文件,在文件末追加以下：12deb http://nginx.org/packages/mainline/debian/ jessi">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/22/Django-nginx-gunicorn-mysql部署/"/>
+
+
+
+
+
+  <title>Django+nginx+gunicorn+mysql部署 | Ddzbl</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/nofound"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ddzbl</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/22/Django-nginx-gunicorn-mysql部署/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="biu">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/biu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ddzbl">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django+nginx+gunicorn+mysql部署</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-22T22:31:16+08:00">
+                2018-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="安装nginx"><a href="#安装nginx" class="headerlink" title="安装nginx"></a>安装nginx</h1><h2 id="安装nginx-PGP签名文件"><a href="#安装nginx-PGP签名文件" class="headerlink" title="安装nginx PGP签名文件"></a>安装nginx PGP签名文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget http://nginx.org/keys/nginx_signing.key</span><br><span class="line">sudo apt-key add nginx_signing.key</span><br></pre></td></tr></table></figure>
+<h2 id="修改source源"><a href="#修改source源" class="headerlink" title="修改source源"></a>修改source源</h2><p>编辑/etc/apt/source.list文件,在文件末追加以下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">deb http://nginx.org/packages/mainline/debian/ jessie nginx</span><br><span class="line">deb-src http://nginx.org/packages/mainline/debian/ jessie nginx</span><br></pre></td></tr></table></figure></p>
+<h2 id="更新软件源并安装nginx"><a href="#更新软件源并安装nginx" class="headerlink" title="更新软件源并安装nginx"></a>更新软件源并安装nginx</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get install nginx</span><br></pre></td></tr></table></figure>
+<p>启动nginx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service nginx start</span><br></pre></td></tr></table></figure></p>
+<h1 id="安装gunicorn"><a href="#安装gunicorn" class="headerlink" title="安装gunicorn"></a>安装gunicorn</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install uwsgi -i http://pypi.douban.com/simple --trusted-host pypi.douban.com</span><br><span class="line">-i 后接的是pip源，此次部署使用的是豆瓣的镜像源。如果pip提示来源不受信任则加上 --trusted-host pypi.douban.com</span><br></pre></td></tr></table></figure>
+<h1 id="gunicorn和nginx的配置"><a href="#gunicorn和nginx的配置" class="headerlink" title="gunicorn和nginx的配置"></a>gunicorn和nginx的配置</h1><h2 id="gunicorn的配置"><a href="#gunicorn的配置" class="headerlink" title="gunicorn的配置"></a>gunicorn的配置</h2><p>项目目录下，新建gunicorn的配置文件gunicorn.conf.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import multiprocessing</span><br><span class="line">bind = &quot;0.0.0.0:2333&quot;</span><br><span class="line">workers = 2</span><br><span class="line">errorlog = &apos;/home/md/gunicorn.error.log&apos;</span><br><span class="line">#accesslog = &apos;./gunicorn.access.log&apos;</span><br><span class="line">#loglevel = &apos;debug&apos;</span><br><span class="line">proc_name = &apos;md&apos;</span><br></pre></td></tr></table></figure></p>
+<p>workers是工作线程数，一般设置成：服务器CPU个数 + 1</p>
+<h2 id="nginx配置"><a href="#nginx配置" class="headerlink" title="nginx配置"></a>nginx配置</h2><p>在项目目录下新建nginx的配置文件nginx.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">     listen 8001;</span><br><span class="line">     server_name localhost example.com;</span><br><span class="line">     access_log /home/md/nginx.access.log;</span><br><span class="line">     error_log /home/md/nginx.error.log;</span><br><span class="line">     location / &#123;</span><br><span class="line">         proxy_pass http://0.0.0.0:2333;</span><br><span class="line">         proxy_set_header Host $host;</span><br><span class="line">         proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">     &#125;</span><br><span class="line">     location /robots.txt &#123;</span><br><span class="line">        alias /home/md/static/robots.txt;</span><br><span class="line">     &#125;</span><br><span class="line">     location /favicon.ico &#123;</span><br><span class="line">          alias /home/md/static/images/favicon.ico;</span><br><span class="line">     &#125;</span><br><span class="line">     location ~ ^/(media|static)/  &#123;</span><br><span class="line">         root    /home/md;</span><br><span class="line">         expires 30d;</span><br><span class="line">     &#125;</span><br><span class="line">     # this prevents hidden files (beginning with a period) from being served</span><br><span class="line">      location ~ /\. &#123;</span><br><span class="line">        access_log off; log_not_found off; deny all;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后将其链接到/etc/nginx/conf.d/blog.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /home/md/nginx.conf /etc/nginx/conf.d/blog.conf</span><br></pre></td></tr></table></figure></p>
+<p>启动gunicorn<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup gunicorn md.wsgi:application -c /home/md/gunicorn.conf.py &amp;</span><br></pre></td></tr></table></figure></p>
+<p>重启nginx<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service nginx restart</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/17/Django配置mysql数据库/" rel="next" title="Django配置mysql数据库">
+                <i class="fa fa-chevron-left"></i> Django配置mysql数据库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/biu.jpg"
+                alt="biu" />
+            
+              <p class="site-author-name" itemprop="name">biu</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装nginx"><span class="nav-number">1.</span> <span class="nav-text">安装nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装nginx-PGP签名文件"><span class="nav-number">1.1.</span> <span class="nav-text">安装nginx PGP签名文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改source源"><span class="nav-number">1.2.</span> <span class="nav-text">修改source源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新软件源并安装nginx"><span class="nav-number">1.3.</span> <span class="nav-text">更新软件源并安装nginx</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装gunicorn"><span class="nav-number">2.</span> <span class="nav-text">安装gunicorn</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gunicorn和nginx的配置"><span class="nav-number">3.</span> <span class="nav-text">gunicorn和nginx的配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gunicorn的配置"><span class="nav-number">3.1.</span> <span class="nav-text">gunicorn的配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx配置"><span class="nav-number">3.2.</span> <span class="nav-text">nginx配置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">biu</span>
+
+  
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
